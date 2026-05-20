@@ -6,6 +6,7 @@ export const pool = new Pool({
   connectionString: config.database_url,
 });
 export const initDB = async () => {
-      await createSchema();
+    await createSchema();
+    console.log("databse connected successfully")
 
 }

@@ -5,8 +5,9 @@ import { initDB } from "./db"
 
 const main = async () => {
     initDB()
-    app.listen()
-    console.log(`Server is running on port ${config.port}`)
+app.listen(config.port, () => {
+  console.log(`Server is running on port ${config.port}`);
+});
 }
 
 main()
