@@ -12,8 +12,6 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRouter)
-app.use((req, res, next) => {
-  res.status(404).json("what??😠");
-});
+
 
 export default app

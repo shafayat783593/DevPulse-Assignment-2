@@ -1,19 +1,24 @@
 
 
 import { promises } from "node:dns";
-import type { Ruser } from "../../types/types";
+import type { Ruser, User } from "../../types/types";
 import bcrypt from "bcryptjs";
 import { pool } from "../../db";
 
 export const HashPassword = async (password: string): Promise<string> => {
+    return await bcrypt.hash(password, 12);
+}
 
-    const hash = await bcrypt.hash(password, 12);
-
-    return hash
+export const ComparePassword = async (password: string, hashPassword: string) => {
+    return await bcrypt.compare(password, hashPassword);
 
 }
 
-export const createUser = async (user: Ruser & { password: string }) => {
+
+
+
+
+export const createUser = async (user: Ruser & { password: string,email:string }) => {
     const { name, role, email, password } = user
     const hashpassword = await HashPassword(password)
 
@@ -30,5 +35,24 @@ export const createUser = async (user: Ruser & { password: string }) => {
     delete result.rows[0].password
 
     return result.rows[0];
+
+}
+
+
+export const checkUser = async (email: string, rawpassword: string) => {
+    const result = await pool.query(
+        `
+        SELECT * FROM users  WHERE email=$1
+        `
+    ,[email])
+    if (!result.rows.length) return null
+
+    const { password, ...user } = result.rows[0] as User
+    const isValid = await ComparePassword(rawpassword, password)
+    if (!isValid) return null
+
+
+    return isValid ? user : null
+
 
 }
