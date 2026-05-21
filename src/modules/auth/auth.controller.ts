@@ -26,9 +26,7 @@ console.log(email,password)
     name: user.name,
     role: user.role,
   };
-
   const { refreshToken, accessToken: token } = tokens(payload);
-
   res.cookie("refreshToken", refreshToken, {
     secure: false,
     httpOnly: true,

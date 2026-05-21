@@ -30,12 +30,8 @@ export const createUser = async (user: Ruser & { password: string,email:string }
   `,
         [name, email, hashpassword, role]
     );
-
-
     delete result.rows[0].password
-
     return result.rows[0];
-
 }
 
 
@@ -50,9 +46,5 @@ export const checkUser = async (email: string, rawpassword: string) => {
     const { password, ...user } = result.rows[0] as User
     const isValid = await ComparePassword(rawpassword, password)
     if (!isValid) return null
-
-
     return isValid ? user : null
-
-
 }

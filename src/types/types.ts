@@ -15,4 +15,4 @@ export type User ={
 
 }
 
-export type Ruser = Omit<User, "update_at" | "created_at" | "password"|"email">
+export type Ruser = Omit<User, "update_at" | "created_at" | "password" | "email">
