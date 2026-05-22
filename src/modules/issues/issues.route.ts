@@ -7,6 +7,7 @@ import { createIssues, deleteIssues, getSingelIssue, updateIssues } from "./Issu
 const router = Router()
 router.post("/", auth, authorizeRoles("contributor", "maintainer"), createIssues)
 router.get("/:id", getSingelIssue)
+router.get("/", getIssues);
 router.put("/:id", auth, authorizeRoles("maintainer", "contributor"), updateIssues)
 router.delete("/:id",auth,authorizeRoles("maintainer"),deleteIssues)
 

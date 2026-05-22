@@ -4,7 +4,7 @@ import type { IssuesWithUserData, Rissues, Ruser } from "../../types/types";
 
 export const issuesCreateInDb = async (issues: Rissues, userId: number) => {
   const { title, description, type } = issues;
-
+// create issues
   const result = await pool.query(
     `
     INSERT INTO issues (title, description, type, reporter_id)
@@ -20,6 +20,8 @@ export const issuesCreateInDb = async (issues: Rissues, userId: number) => {
 
 export const getsingleIssueFromDB = async (issueId: string) => {
   console.log(issueId)
+
+  // Join with user data 
   const result = await pool.query(
     `
 SELECT 
@@ -60,7 +62,7 @@ WHERE issues.id = $1;
 
 export const updateIssuessInDB = async (issueId: string, data: Partial<Rissues>, user:Ruser) => {
   const { title, description, type } = data
-  
+  // first get issue
  const issueRes = await pool.query(
     `SELECT * FROM issues WHERE id = $1`,
     [issueId]
@@ -70,13 +72,15 @@ export const updateIssuessInDB = async (issueId: string, data: Partial<Rissues>,
 
   if (!existingIssue) return null;
   
-
+// role  check
   if (user.role === "contributor") {
     if (existingIssue.reporter_id !== user.id ||
       existingIssue.status !== "open") {
             throw new Error("Forbidden")
       }
   }
+
+  // update issues
  const result = await pool.query(
     `
     UPDATE issues
@@ -104,4 +108,8 @@ WHERE id =$1
     , [issueId])
   
   return result.rows[0]
+}
+
+export const  getIssuesWithParamf = async () => {
+  
 }

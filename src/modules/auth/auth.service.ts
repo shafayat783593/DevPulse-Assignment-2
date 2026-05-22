@@ -14,14 +14,11 @@ export const ComparePassword = async (password: string, hashPassword: string) =>
 
 }
 
-
-
-
-
 export const createUser = async (user: Ruser & { password: string,email:string }) => {
     const { name, role, email, password } = user
+    // password hash 
     const hashpassword = await HashPassword(password)
-
+// create user 
     const result = await pool.query(
         `
   INSERT INTO users(name, email, password, role) 
@@ -36,6 +33,7 @@ export const createUser = async (user: Ruser & { password: string,email:string }
 
 
 export const checkUser = async (email: string, rawpassword: string) => {
+    // find user with email
     const result = await pool.query(
         `
         SELECT * FROM users  WHERE email=$1
@@ -44,6 +42,7 @@ export const checkUser = async (email: string, rawpassword: string) => {
     if (!result.rows.length) return null
 
     const { password, ...user } = result.rows[0] as User
+    // compare password 
     const isValid = await ComparePassword(rawpassword, password)
     if (!isValid) return null
     return isValid ? user : null

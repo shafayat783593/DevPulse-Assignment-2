@@ -15,7 +15,6 @@ export const signup = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body
-console.log(email,password)
  const user = await checkUser(email, password)
   
   if (!user) return sendResponse(res, { message: "Failed to create user", error: true }, 400);
@@ -26,7 +25,10 @@ console.log(email,password)
     name: user.name,
     role: user.role,
   };
+  // create token 
   const { refreshToken, accessToken: token } = tokens(payload);
+
+  // token save on cookie
   res.cookie("refreshToken", refreshToken, {
     secure: false,
     httpOnly: true,

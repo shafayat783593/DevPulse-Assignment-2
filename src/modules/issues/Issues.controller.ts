@@ -14,6 +14,15 @@ export const createIssues = async (req: Request, res: Response) => {
 }
 
 
+export const getIssues = async (req: Request, res: Response) => {
+    const result = await getIssuesWithParamf()
+    if (!result) return {
+          sendResponse(res, { message: "Failed to create issues", error: true }, 400);  
+        } 
+
+    sendResponse(res, { message: "Issue created successfully", data: result }, 200);
+}
+
 export const getSingelIssue = async (req: Request, res: Response) => {
     const issueId = req.params.id as string;
     const result = await getsingleIssueFromDB(issueId)
