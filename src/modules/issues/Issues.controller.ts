@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
-import { getsingleIssueFromDB, issuesCreateInDb, updateIssuessInDB } from "./issues.service";
+import { deleteIssuesFromDB, getsingleIssueFromDB, issuesCreateInDb, updateIssuessInDB } from "./issues.service";
 import { sendResponse } from "../../utility/sendResponse";
+import { error } from "node:console";
 
 
 export const createIssues = async (req: Request, res: Response) => {
@@ -13,18 +14,32 @@ export const createIssues = async (req: Request, res: Response) => {
 }
 
 
-export const getSingelIssue = async(req:Request,res:Response) => {
+export const getSingelIssue = async (req: Request, res: Response) => {
     const issueId = req.params.id as string;
     const result = await getsingleIssueFromDB(issueId)
-        if (!result) return sendResponse(res, { message: "Issue not found", error: true }, 400);
-    sendResponse(res, {data: result }, 200);
+    if (!result) return sendResponse(res, { message: "Issue not found", error: true }, 400);
+    sendResponse(res, { data: result }, 200);
 
 }
 
 export const updateIssues = async (req: Request, res: Response) => {
-    const issueId = req.params.id as string;
-const data = req.body
-    const result = await updateIssuessInDB(issueId, data)
-            if (!result) return sendResponse(res, { message: "Issue not found", error: true }, 400);
-    sendResponse(res, {  "message": "Issue updated successfully",data: result }, 200);
+    try {
+        const issueId = req.params.id as string;
+    const data = req.body
+    const result = await updateIssuessInDB(issueId, data, req.user)
+    if (!result) return sendResponse(res, { message: "Issue not found", error: true }, 400);
+    sendResponse(res, { "message": "Issue updated successfully", data: result }, 200);
+    } catch (error:any) {
+        return sendResponse(res,{message:error.message,error:true},403)
+    }
+}
+
+
+export const deleteIssues = async (req: Request, res: Response) => {
+    const issueId = req.params.id as string
+    const result = await deleteIssuesFromDB(issueId)
+    if (!result) {
+        sendResponse(res,{message:"Issue not found",error:true},400)
+    }
+    sendResponse(res,{message:"Issue deleted successfully"},200)
 }

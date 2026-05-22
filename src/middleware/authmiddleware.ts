@@ -15,7 +15,6 @@ export const auth = async(req:Request, res: Response, next: NextFunction) => {
     }
     const paylode = verifyToken(token, "accessToken")
     
-    console.log("paylode", paylode)
     if (!paylode) {
         return sendResponse(res, { message: "Invalid access token", error: true }, 401);
      }

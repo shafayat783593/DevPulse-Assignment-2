@@ -58,8 +58,25 @@ WHERE issues.id = $1;
 
 
 
-export const updateIssuessInDB = async (issueId: string, data: Rissues) => {
-  const {title,description,type}=data
+export const updateIssuessInDB = async (issueId: string, data: Partial<Rissues>, user:Ruser) => {
+  const { title, description, type } = data
+  
+ const issueRes = await pool.query(
+    `SELECT * FROM issues WHERE id = $1`,
+    [issueId]
+  );
+
+  const existingIssue = issueRes.rows[0];
+
+  if (!existingIssue) return null;
+  
+
+  if (user.role === "contributor") {
+    if (existingIssue.reporter_id !== user.id ||
+      existingIssue.status !== "open") {
+            throw new Error("Forbidden")
+      }
+  }
  const result = await pool.query(
     `
     UPDATE issues
@@ -77,3 +94,14 @@ export const updateIssuessInDB = async (issueId: string, data: Rissues) => {
 }
 
 
+export const deleteIssuesFromDB = async (issueId:string) => {
+  const result =await pool.query(
+    `
+    DELETE FROM issues
+WHERE id =$1
+  RETURNING *;
+    `
+    , [issueId])
+  
+  return result.rows[0]
+}
