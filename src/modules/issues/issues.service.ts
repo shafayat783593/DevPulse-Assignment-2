@@ -55,3 +55,25 @@ WHERE issues.id = $1;
     updated_at: data.updated_at
   }
 }
+
+
+
+export const updateIssuessInDB = async (issueId: string, data: Rissues) => {
+  const {title,description,type}=data
+ const result = await pool.query(
+    `
+    UPDATE issues
+    SET
+      title = COALESCE($1, title),
+      description = COALESCE($2, description),
+      type = COALESCE($3, type),
+      updated_at = NOW()
+    WHERE id = $4
+    RETURNING *;
+    `,
+    [title ?? null, description ?? null, type ?? null, issueId]
+  );
+  return result.rows[0]
+}
+
+
