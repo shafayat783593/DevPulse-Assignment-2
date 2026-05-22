@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { issuesCreateInDb } from "./issues.service";
+import { getsingleIssueFromDB, issuesCreateInDb } from "./issues.service";
 import { sendResponse } from "../../utility/sendResponse";
 
 
@@ -13,4 +13,10 @@ export const createIssues = async (req: Request, res: Response) => {
 }
 
 
-// const result = await issuesCreateInDb(req.body)
+export const getSingelIssue = async(req:Request,res:Response) => {
+    const issueId = req.params.id as string;
+    const result = await getsingleIssueFromDB(issueId)
+        if (!result) return sendResponse(res, { message: "Issue not found", error: true }, 400);
+    sendResponse(res, {data: result }, 200);
+
+}

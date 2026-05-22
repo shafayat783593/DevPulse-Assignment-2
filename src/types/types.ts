@@ -33,4 +33,21 @@ export type Issues = {
     created_at:Date,
     updated_at:Date
 }
-export type Rissues = Omit<Issues, "id" | "updated_at" | "created_at" > 
+export type Rissues = Omit<Issues, "updated_at" | "created_at"> 
+
+
+
+
+export type IssuesWithUserData = {
+  id: number;
+  title: string;
+  description: string;
+  type: IssueType;
+  status: IssueStatus;
+  created_at: Date;
+  updated_at: Date;
+  reporter_id: number;
+  reporter_name: string;
+    reporter_role: Role;
+    
+};
