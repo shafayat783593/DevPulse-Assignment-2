@@ -1,6 +1,6 @@
 import {  Router, type Request, type Response } from "express";
 import { auth, authorizeRoles } from "../../middleware/authmiddleware";
-import { createIssues, deleteIssues, getSingelIssue, updateIssues } from "./Issues.controller";
+import { createIssues, deleteIssues, getIssues, getSingelIssue, updateIssues } from "./Issues.controller";
 
 
 
