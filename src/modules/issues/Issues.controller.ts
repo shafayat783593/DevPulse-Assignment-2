@@ -25,7 +25,7 @@ export const getSingelIssue = async (req: Request, res: Response) => {
     const issueId = req.params.id as string;
     const result = await getsingleIssueFromDB(issueId)
     if (!result) return sendResponse(res, { message: "Issue not found", error: true }, 400);
-    sendResponse(res, { data: result }, 200);
+    sendResponse(res, {"message":"Issue retrived successfully", data: result }, 200);
 
 }
 

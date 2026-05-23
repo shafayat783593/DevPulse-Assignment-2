@@ -17,6 +17,69 @@ export const issuesCreateInDb = async (issues: Rissues, userId: number) => {
 };
 
 
+export const getIssuesWithParam = async (query: any) => {
+  const { sort, type, status } = query;
+
+// join issues and user data 
+  let sql = `
+    SELECT 
+      i.*, 
+      u.id AS reporter_id, 
+      u.name AS reporter_name, 
+      u.role AS reporter_role
+    FROM issues i
+    LEFT JOIN users u ON i.reporter_id = u.id
+    WHERE 1=1
+  `;
+  
+  const values: any[] = [];
+  let i = 1;
+
+  // ২. fittering
+  if (type) {
+    sql += ` AND i.type = $${i}`;
+    values.push(type);
+    i++;
+  }
+
+  if (status) {
+    sql += ` AND i.status = $${i}`;
+    values.push(status);
+    i++;
+  }
+
+  // sorting 
+  if (sort === "oldest") {
+    sql += ` ORDER BY i.created_at ASC`;
+  } else {
+    sql += ` ORDER BY i.created_at DESC`;
+  }
+
+  // get data from database
+  const result = await pool.query(sql, values);
+  const rows = result.rows;
+// map for formating
+  const finalData = rows.map((row) => {
+    return {
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      type: row.type,
+      status: row.status,
+      reporter: {
+        id: row.reporter_id,
+        name: row.reporter_name,
+        role: row.reporter_role,
+      },
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    };
+  });
+
+  return finalData;
+};
+
+
 export const getsingleIssueFromDB = async (issueId: string) => {
 
   // Join with user data 
@@ -108,64 +171,3 @@ WHERE id =$1
   return result.rows[0]
 }
 
-export const getIssuesWithParam = async (query: any) => {
-  const { sort, type, status } = query;
-
-// join issues and user data 
-  let sql = `
-    SELECT 
-      i.*, 
-      u.id AS reporter_id, 
-      u.name AS reporter_name, 
-      u.role AS reporter_role
-    FROM issues i
-    LEFT JOIN users u ON i.reporter_id = u.id
-    WHERE 1=1
-  `;
-  
-  const values: any[] = [];
-  let i = 1;
-
-  // ২. fittering
-  if (type) {
-    sql += ` AND i.type = $${i}`;
-    values.push(type);
-    i++;
-  }
-
-  if (status) {
-    sql += ` AND i.status = $${i}`;
-    values.push(status);
-    i++;
-  }
-
-  // sorting 
-  if (sort === "oldest") {
-    sql += ` ORDER BY i.created_at ASC`;
-  } else {
-    sql += ` ORDER BY i.created_at DESC`;
-  }
-
-  // get data from database
-  const result = await pool.query(sql, values);
-  const rows = result.rows;
-// map for formating
-  const finalData = rows.map((row) => {
-    return {
-      id: row.id,
-      title: row.title,
-      description: row.description,
-      type: row.type,
-      status: row.status,
-      reporter: {
-        id: row.reporter_id,
-        name: row.reporter_name,
-        role: row.reporter_role,
-      },
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-    };
-  });
-
-  return finalData;
-};
